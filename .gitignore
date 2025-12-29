@@ -3,6 +3,12 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
+# start.bat
+start.bat
+
+#vcpkg
+vcpkg/
+
 # User-specific files
 *.rsuser
 *.suo
@@ -17,6 +23,7 @@
 mono_crash.*
 
 # Build results
+build/
 [Dd]ebug/
 [Dd]ebugPublic/
 [Rr]elease/

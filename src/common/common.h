@@ -13,3 +13,6 @@
 
 #undef max
 #define CINCHAR std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n')
+
+void wait();
+void clearScreen();
