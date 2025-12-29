@@ -1,6 +1,9 @@
 #pragma once
 
 #include "common.h"
-
 #include "members.h"
-#include "student.h"
+
+class professor
+{
+};
+

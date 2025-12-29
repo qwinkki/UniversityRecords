@@ -16,10 +16,22 @@
     <Filter Include="members">
       <UniqueIdentifier>{f3d75252-b361-4f39-bb98-29704a289dc8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="members\student">
+      <UniqueIdentifier>{66bf654c-18e1-4839-9482-12a5179acb38}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="members\professor">
+      <UniqueIdentifier>{99188fa5-d730-4823-b1e7-a3588f94ad0e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="professor.cpp">
+      <Filter>members\professor</Filter>
+    </ClCompile>
+    <ClCompile Include="student.cpp">
+      <Filter>members\student</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -31,6 +43,12 @@
     </ClInclude>
     <ClInclude Include="members.h">
       <Filter>members</Filter>
+    </ClInclude>
+    <ClInclude Include="professor.h">
+      <Filter>members\professor</Filter>
+    </ClInclude>
+    <ClInclude Include="student.h">
+      <Filter>members\student</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
