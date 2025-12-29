@@ -1,0 +1,7 @@
+<Solution>
+  <Configurations>
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Project Path="UniversityRecords/UniversityRecords.vcxproj" Id="d109bc86-6d9a-473c-8cab-76f72a0c6219" />
+</Solution>
