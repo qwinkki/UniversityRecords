@@ -6,6 +6,8 @@
 class student : public member {
 
     std::vector<std::pair<std::string, unsigned short int>> score;
+    std::string group;
+    bool isGraduating = true;
 
     bool showScores() const {
         if (!score.empty()) {
@@ -22,12 +24,14 @@ class student : public member {
 
 public:
     student(
-        unsigned _id,
-        const std::string& _name,
-        const std::string& _surname,
-        unsigned int _educationYear
+        unsigned id,
+        const std::string& name,
+        const std::string& surname,
+        unsigned int educationYear,
+        const std::string& group
     )
-        : member(_id, _name, _surname, _educationYear)
+        : member(id, name, surname, educationYear),
+        group(group)
     {
     }
 
@@ -170,6 +174,46 @@ public:
         catch (const std::exception& e) {
             std::cerr << COLORRED << "Error: " << e.what() << '\n' << COLORDEFAULT;
         }
+    }
+
+    // work with years and marks
+    void nextYear(){
+        if(!isGraduating){
+            std::cout << getName() << " is not graduating\n";
+            return;
+        }
+
+        if(getYearsInUniversity() == 4){
+            setYearsInUniversity(0);
+            isGraduating = false;
+            std::cout << "Student " << getName() << " end study in university\n";
+            score.clear();
+            return;
+        }
+
+        setYearsInUniversity(getYearsInUniversity() + 1);
+        std::cout << "Student " << getName() << " is now educating " << getYearsInUniversity() << " year\n";
+    }
+    void startSession(){
+        nextYear();
+        
+        if(isGraduating){
+            unsigned short int newMark;
+            for(auto& item : score){
+                while(true){
+                    std::cout << "Enter new mark at the " << item.first << ": ";
+                    std::cin >> newMark;
+                    if (newMark < 2 || newMark > 5){
+                        std::cerr << "Mark must be between 2 and 5\n";
+                    }
+                    else{
+                        item.second = newMark;
+                        break;
+                    }
+                }
+            }
+        std::cout << "All marks for this student changed\n\n";
+        }   
     }
 
 

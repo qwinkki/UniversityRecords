@@ -2,10 +2,7 @@
 
 int main() {
 
-	initializeDatabase();
-	wait();	
-
-	student a(1, "tom", "soyer", 2);
+	student a(1, "tom", "soyer", 2, "IB");
 
 	studentMenu(a);
 }

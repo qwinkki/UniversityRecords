@@ -15,6 +15,7 @@ void studentMenu(student st) {
 			<< "\n5. Delete subject"
 			<< "\n6. Sort by name of subject"
 			<< "\n7. Sort by mark"
+			<< "\n8. Start session"
 			<< "\n\n0. Exit"
 			<< "\nEnter number: ";
 		std::cin >> choose; CINCHAR;
@@ -54,6 +55,11 @@ void studentMenu(student st) {
 		case '7':
 			clearScreen();
 			st.sortByMark();
+			wait();
+			break;
+		case '8':
+			clearScreen();
+			st.startSession();
 			wait();
 			break;
 		case '0':

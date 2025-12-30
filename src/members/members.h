@@ -12,15 +12,15 @@ class member {
 public:
 
 	member(
-		unsigned _id,
-		const std::string& _name,
-		const std::string& _surname,
-		unsigned int _yearsInUniversity
+		unsigned id,
+		const std::string& name,
+		const std::string& surname,
+		unsigned int yearsInUniversity
 	)
-		: id(_id),
-		name(_name),
-		surname(_surname),
-		yearsInUniversity(_yearsInUniversity)
+		: id(id),
+		name(name),
+		surname(surname),
+		yearsInUniversity(yearsInUniversity)
 	{ }
 
 	unsigned int getId() const { return id; }
@@ -29,6 +29,7 @@ public:
 	unsigned int getYearsInUniversity() const { return yearsInUniversity; }
 
 	void setId(unsigned int _id) { id = _id; }
+	void setYearsInUniversity(unsigned int year) { yearsInUniversity = year; }
 
 	virtual void print() const {
 		std::cout << "id: " << id << "  " << name << " " << surname << "  years of beeing in university: " << yearsInUniversity << "\n\n";

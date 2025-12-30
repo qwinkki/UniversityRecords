@@ -3,7 +3,8 @@
 #include "common/common.h"
 #include "members/members.h"
 
-class professor
+class professor : public member
 {
+    
 };
 
