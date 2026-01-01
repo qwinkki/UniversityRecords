@@ -5,7 +5,7 @@ void studentMenu(student st) {
 	char choose;
 	do {
 		clearScreen();
-		std::cout << "id: " << st.getId() << " | " << st.getName() << ' ' << st.getSurname();
+		std::cout << "id: " << st.getId() << " | " << st.getName() << ' ' << st.getSurname() << "\tGroup: " << st.getGroup();
 
 		std::cout << "\n\nWhat do you want to do:"
 			<< "\n1. Print everything about student"

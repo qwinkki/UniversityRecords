@@ -15,3 +15,10 @@ void wait() {
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     std::cin.get();
 }
+
+void nextGlobalSessionYear(){
+    GlobalSessionYear++;
+}
+unsigned long int getGlobalSessionYear(){
+    return GlobalSessionYear / 2;
+}

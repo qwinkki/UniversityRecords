@@ -6,7 +6,7 @@
 class student : public member {
 
     std::vector<std::pair<std::string, unsigned short int>> score;
-    std::string group;
+    const std::string group;
     bool isGraduating = true;
 
     bool showScores() const {
@@ -34,6 +34,9 @@ public:
         group(group)
     {
     }
+
+    std::string getGroup() const { return group; }
+    bool getIsGraduating() const { return isGraduating; }
 
     // for print
     void printScore() const {
@@ -179,14 +182,15 @@ public:
     // work with years and marks
     void nextYear(){
         if(!isGraduating){
-            std::cout << getName() << " is not graduating\n";
+            std::cout << "Student " << getName() << " end graduating at university " << getYearsInUniversity() << " years ago";
+            setYearsInUniversity(getYearsInUniversity() + 1);
             return;
         }
 
         if(getYearsInUniversity() == 4){
-            setYearsInUniversity(0);
+            setYearsInUniversity(1);
             isGraduating = false;
-            std::cout << "Student " << getName() << " end study in university\n";
+            std::cout << "Student " << getName() << " ended study in university\n";
             score.clear();
             return;
         }
@@ -213,14 +217,20 @@ public:
                 }
             }
         std::cout << "All marks for this student changed\n\n";
-        }   
+        }
     }
 
 
     // print
     void print() const override {
-        std::cout << "id: " << getId() << " | " << getName() << ' ' << getSurname() << "\t Graduation year: " << getYearsInUniversity() << '\n';
-        showScores();
+        std::cout << "\nStudent"
+        << " id: " << getId() << " | " << getName() << ' ' << getSurname();
+        if(isGraduating){
+            std::cout << "\n\tGraduating year: " << getYearsInUniversity() << '\n';
+            showScores();
+        }else{
+            std::cout << "\n\tStudent end studing at university " << getYearsInUniversity() << " years ago\n";
+        }
     }
 };
 
