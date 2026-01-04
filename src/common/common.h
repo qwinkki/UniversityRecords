@@ -18,6 +18,6 @@ void wait();
 void clearScreen();
 
 // for Global session; not for professor or student .. etc.
-unsigned long int GlobalSessionYear = 0; // database
+extern unsigned long int GlobalSessionYear; // database
 void nextGlobalSessionYear();
 unsigned long int getGlobalSessionYear();

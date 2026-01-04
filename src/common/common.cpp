@@ -1,5 +1,7 @@
 #include "common.h"
 
+unsigned long int GlobalSessionYear = 0;
+
 void clearScreen() {
 #ifdef _WIN32
     // windows

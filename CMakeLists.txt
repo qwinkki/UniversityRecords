@@ -21,6 +21,11 @@ if(WIN32)
         set(CMAKE_TOOLCHAIN_FILE ${CMAKE_CURRENT_SOURCE_DIR}/vcpkg/scripts/buildsystems/vcpkg.cmake CACHE STRING "")
     endif()
     find_package(libpqxx CONFIG REQUIRED)
+
+    target_include_directories(UniversityRecords PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/src
+    )
+
     target_link_libraries(UniversityRecords PRIVATE libpqxx::pqxx)
 elseif(APPLE)
     # macOS + Homebrew
