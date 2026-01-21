@@ -24,7 +24,7 @@ void studentMenu(student st) {
 		{
 		case '1':
 			clearScreen();
-			st.print();
+			st.printAll();
 			wait();
 			break;
 		case '2':

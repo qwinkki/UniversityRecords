@@ -222,7 +222,10 @@ public:
 
 
     // print
-    void print() const override {
+    void print() const override{
+        std::cout << "id: " << getId() << "\tStudent " << getName() << ' ' << getSurname() << "\tGroup: " << getGroup() << '\n';
+    }
+    void printAll() const override {
         std::cout << "\nStudent"
         << " id: " << getId() << " | " << getName() << ' ' << getSurname();
         if(isGraduating){

@@ -2,6 +2,7 @@
 
 #include "common/common.h"
 #include "members/members.h"
+#include "student/student.h"
 
 class professor : public member
 {
@@ -33,11 +34,15 @@ class professor : public member
         std::cout << getName() << " teaching students for " << getYearsInUniversity() << " years\n";
     }
 
+    // print
     void print() const override{
+        std::cout << "id: " << getId() << "\tProfessor: " << getName() << ' ' << getSurname() << "\tGroup: " << getGroupCurator() << '\n';
+    }
+    void printAll() const override{
         std::cout << "\nProfessor"
             << " id: " << getId() << " | " << getName() << ' ' << getSurname() << " Group: " << getGroupCurator() << " | with subject: " << getSubject() 
             << "\n\tTeaching is university: " << getYearsInUniversity() << " years\n";
     }
 };
 
-void professorMenu(professor pr);
+void professorMenu(professor professor, std::vector<student> students);

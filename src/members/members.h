@@ -32,6 +32,9 @@ public:
 	void setYearsInUniversity(unsigned int year) { yearsInUniversity = year; }
 
 	virtual void print() const {
+		std::cout << "id: " << id << "  " << name << " " << surname << "\n\n";
+	}
+	virtual void printAll() const {
 		std::cout << "id: " << id << "  " << name << " " << surname << "  years of beeing in university: " << yearsInUniversity << "\n\n";
 	}
 
