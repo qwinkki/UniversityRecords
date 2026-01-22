@@ -2,6 +2,8 @@
 
 int main() {
 
+	initializeDatabase();
+
 	student a(1, "tom", "soyer", 2, "IB");
 	student b(2, "bob", "phil", 3, "KB");
 	student c(3, "third", "okak", 4, "IB");
@@ -10,6 +12,11 @@ int main() {
 	students.push_back(a);
 	students.push_back(b);
 	students.push_back(c);
+
+	a.addSubject();
+	wait();
+	a.editMark();
+	wait();
 
 	clearScreen();
 	std::cout << "1. Show all students"

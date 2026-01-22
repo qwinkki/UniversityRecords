@@ -1,11 +1,27 @@
 #include "student.h"
 
+void studentSelfMenu(student student){
+	char choose;
+	do{
+		clearScreen();
+		student.print();
+		student.printScore();
+		
+		std::cout << "\n1. Refresh"
+			<< "\n0. Exit"
+			<< "\nEnter number: ";
+		std::cin >> choose; CINCHAR;
+		if(choose == '1'){
+			// refresh marks from db
+		}
+	}while(choose != '0');
+}
 
-void studentMenu(student st) {
+void studentMenu(student student) {
 	char choose;
 	do {
 		clearScreen();
-		std::cout << "id: " << st.getId() << " | " << st.getName() << ' ' << st.getSurname() << "\tGroup: " << st.getGroup();
+		student.print();
 
 		std::cout << "\n\nWhat do you want to do:"
 			<< "\n1. Print everything about student"
@@ -24,42 +40,42 @@ void studentMenu(student st) {
 		{
 		case '1':
 			clearScreen();
-			st.printAll();
+			student.printAll();
 			wait();
 			break;
 		case '2':
 			clearScreen();
-			st.printScore();
+			student.printScore();
 			wait();
 			break;
 		case '3':
 			clearScreen();
-			st.addSubject();
+			student.addSubject();
 			wait();
 			break;
 		case '4':
 			clearScreen();
-			st.editMark();
+			student.editMark();
 			wait();
 			break;
 		case '5':
 			clearScreen();
-			st.deleteScore();
+			student.deleteScore();
 			wait();
 			break;
 		case '6':
 			clearScreen();
-			st.sortByName();
+			student.sortByName();
 			wait();
 			break;
 		case '7':
 			clearScreen();
-			st.sortByMark();
+			student.sortByMark();
 			wait();
 			break;
 		case '8':
 			clearScreen();
-			st.startSession();
+			student.startSession();
 			wait();
 			break;
 		case '0':

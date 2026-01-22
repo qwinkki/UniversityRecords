@@ -15,8 +15,8 @@ class professor : public member
         const std::string& name,
         const std::string& surname,
         unsigned int yearsInUniversity,
-        const std::string& groupCurator,
-        const std::string& subject
+        std::string groupCurator,
+        std::string subject
     )
         : member(id, name, surname, yearsInUniversity),
           groupCurator(groupCurator),

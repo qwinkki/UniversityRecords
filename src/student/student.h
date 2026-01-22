@@ -2,6 +2,7 @@
 
 #include "common/common.h"
 #include "members/members.h"
+#include "database/database.h"
 
 class student : public member {
 
@@ -28,7 +29,7 @@ public:
         const std::string& name,
         const std::string& surname,
         unsigned int educationYear,
-        const std::string& group
+        std::string group
     )
         : member(id, name, surname, educationYear),
         group(group)
@@ -235,6 +236,16 @@ public:
             std::cout << "\n\tStudent end studing at university " << getYearsInUniversity() << " years ago\n";
         }
     }
+
+
+    //database
+    void saveStudent(){
+        
+    }
+    void getStudent(){
+
+    }
 };
 
-void studentMenu(student st);
+void studentSelfMenu(student student);
+void studentMenu(student student);
