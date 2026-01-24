@@ -46,6 +46,9 @@ public:
 
     std::string getGroup() const { return group; }
     bool getIsGraduating() const { return isGraduating; }
+    std::vector<std::pair<std::string, unsigned short int>> getScore() const { return score; }
+
+    void setScore(const std::vector<std::pair<std::string, unsigned short int>>& newScore) { score = newScore; }
 
     // for print
     void printScore() const {
@@ -253,3 +256,4 @@ void studentMenu(student student);
 // database
 void registerStudentToDB(student& student, const std::string& login, const std::string& password);
 student getStudentFromDB(const std::string& login, const std::string& password);
+void updateStudentInDB(const student& student, const std::string& login, const std::string& password);

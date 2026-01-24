@@ -118,7 +118,24 @@ void registerStudentToDB(student& student, const std::string& login, const std::
         w.exec_params("INSERT INTO students (userId, name, surname, educationYear, groupId) VALUES ($1, $2, $3, $4, $5);",
             userId, student.getName(), student.getSurname(), student.getYearsInUniversity(), groupId);
 
-		// INSERT SUBJECTS
+		// subjects
+		if(student.getScore().size() > 0){
+			for(auto& item : student.getScore()){
+				pqxx::result subjectRes = w.exec_params("SELECT id FROM subjects WHERE name = $1;", item.first);
+
+				int hasSubjectId;
+				if(!subjectRes.empty()){
+					hasSubjectId = subjectRes[0][0].as<int>();
+				}
+				else{
+					pqxx::result newSubjectRes = w.exec_params("INSERT INTO subjects (name) VALUES ($1) RETURNING id;", item.first);
+					hasSubjectId = newSubjectRes[0][0].as<int>();
+				}
+
+				w.exec_params("INSERT INTO scores (studentId, subjectId, mark) VALUES ((SELECT id FROM students WHERE userId = $1), $2, $3);",
+					userId, hasSubjectId, item.second);
+			}
+		}
 
         w.commit();
         std::cout << "Student " << student.getName() << " succesfully registered\n";
@@ -126,6 +143,47 @@ void registerStudentToDB(student& student, const std::string& login, const std::
     catch(const std::exception& e){
 	    std::cerr << COLORRED << e.what() << '\n' << COLORDEFAULT;
     }
+}
+void updateStudentInDB(const student& student, const std::string& login, const std::string& password){
+	pqxx::work w(Database::getInstance());
+
+	try{
+		// verify user
+		pqxx::result userRes = w.exec_params("SELECT id, role FROM users WHERE login = $1 AND password = $2;", login, password);
+		std::string role = userRes[0]["role"].as<std::string>();
+		if(userRes.empty() || role != "student") throw "Wrong login or password";
+
+		// update student info
+		w.exec_params("UPDATE students SET name = $1, surname = $2, educationYear = $3 WHERE id = $4;",
+			student.getName(), student.getSurname(), student.getYearsInUniversity(), student.getId());
+
+		// update scores
+		// first delete existing scores
+		w.exec_params("DELETE FROM scores WHERE studentId = $1;", student.getId());
+
+		// then insert new scores
+		for(const auto& item : student.getScore()){
+			pqxx::result subjectRes = w.exec_params("SELECT id FROM subjects WHERE name = $1;", item.first);
+
+			int subjectId;
+			if(!subjectRes.empty()){
+				subjectId = subjectRes[0][0].as<int>();
+			}
+			else{
+				pqxx::result newSubjectRes = w.exec_params("INSERT INTO subjects (name) VALUES ($1) RETURNING id;", item.first);
+				subjectId = newSubjectRes[0][0].as<int>();
+			}
+
+			w.exec_params("INSERT INTO scores (studentId, subjectId, mark) VALUES ($1, $2, $3);",
+				student.getId(), subjectId, item.second);
+		}
+
+		w.commit();
+		std::cout << "Student " << student.getName() << " succesfully updated in database\n";
+	}
+	catch(const std::exception& e){
+	    std::cerr << COLORRED << e.what() << '\n' << COLORDEFAULT;
+	}
 }
 student getStudentFromDB(const std::string& login, const std::string& password){
 	pqxx::work w(Database::getInstance());
@@ -141,7 +199,18 @@ student getStudentFromDB(const std::string& login, const std::string& password){
 		if(studentRes.empty()) throw "Student profile not found";
 		
 		student newStudent(studentRes[0]["id"].as<int>(), studentRes[0]["name"].as<std::string>(), studentRes[0]["surname"].as<std::string>(), studentRes[0]["educationYear"].as<int>(), studentRes[0]["groupName"].as<std::string>());
-		// GET SUBJECTS
+		
+		// get scores
+		pqxx::result scoresRes = w.exec_params(
+			"SELECT sub.name, sc.mark FROM scores sc JOIN subjects sub ON sc.subjectId = sub.id WHERE sc.studentId = $1;",
+			studentRes[0]["id"].as<int>());
+		if(!scoresRes.empty()){
+			std::vector<std::pair<std::string, unsigned short int>> scores;
+			for(const auto& row : scoresRes){
+				scores.emplace_back(row["name"].as<std::string>(), row["mark"].as<unsigned short int>());
+			}
+			newStudent.setScore(scores);
+		}
 
 		w.commit();
 
