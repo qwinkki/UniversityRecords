@@ -11,7 +11,7 @@ Database::Database() {
 	std::cout << "start connecting to Database\n";
 	if(!conn)
 		try {
-			conn = std::make_unique<pqxx::connection>("postgresql://postgres:123@localhost:5432/UniversityMembers");
+			conn = std::make_unique<pqxx::connection>("postgresql://postgres:123@localhost:5432/UniversityRecords");
 			if (conn->is_open())
 				std::cout << "database opening.. " << COLORGREEN << "OK\n" << COLORDEFAULT;
 			else {
@@ -41,7 +41,7 @@ void initializeDatabase() {
 		// groups, professors, students
 		w.exec("CREATE TABLE IF NOT EXISTS groups (id SERIAL PRIMARY KEY, groupName TEXT NOT NULL UNIQUE);");
 		w.exec("CREATE TABLE IF NOT EXISTS professors (id SERIAL PRIMARY KEY, userId INT NOT NULL, name TEXT NOT NULL, surname TEXT NOT NULL, groupId INT NOT NULL, FOREIGN KEY (userId) REFERENCES users(id), FOREIGN KEY (groupId) REFERENCES groups(id), years INT NOT NULL, subject TEXT NOT NULL);");
-		w.exec("CREATE TABLE IF NOT EXISTS students (id SERIAL PRIMARY KEY, userId INT NOT NULL, name TEXT NOT NULL, surname TEXT NOT NULL, educationYear INT NOT NULL, group_id INT NOT NULL, FOREIGN KEY (userId) REFERENCES users(id), FOREIGN KEY (group_id) REFERENCES groups(id));");
+		w.exec("CREATE TABLE IF NOT EXISTS students (id SERIAL PRIMARY KEY, userId INT NOT NULL, name TEXT NOT NULL, surname TEXT NOT NULL, educationYear INT NOT NULL, groupId INT NOT NULL, FOREIGN KEY (userId) REFERENCES users(id), FOREIGN KEY (groupId) REFERENCES groups(id));");
 		std::cout << "groups, professors, students tables.. " << COLORGREEN << "OK\n" << COLORDEFAULT;
 		
 		// marks for students
@@ -55,5 +55,6 @@ void initializeDatabase() {
 	}
 	catch (const std::exception& e) {
 		std::cerr << COLORRED << e.what() << '\n' << COLORDEFAULT;
+		wait();
 	}
 }

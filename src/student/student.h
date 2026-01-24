@@ -7,7 +7,7 @@
 class student : public member {
 
     std::vector<std::pair<std::string, unsigned short int>> score;
-    const std::string group;
+    std::string group;
     bool isGraduating = true;
 
     bool showScores() const {
@@ -32,7 +32,15 @@ public:
         std::string group
     )
         : member(id, name, surname, educationYear),
-        group(group)
+        group(std::move(group))
+    {
+    }
+    // constructor for copy class
+    student(const student& other)
+        : member(other),
+          group(other.group),
+          isGraduating(other.isGraduating),
+          score(other.score)
     {
     }
 
@@ -236,16 +244,12 @@ public:
             std::cout << "\n\tStudent end studing at university " << getYearsInUniversity() << " years ago\n";
         }
     }
-
-
-    //database
-    void saveStudent(){
-        
-    }
-    void getStudent(){
-
-    }
 };
 
+// menu
 void studentSelfMenu(student student);
 void studentMenu(student student);
+
+// database
+void registerStudentToDB(student& student, const std::string& login, const std::string& password);
+student getStudentFromDB(const std::string& login, const std::string& password);

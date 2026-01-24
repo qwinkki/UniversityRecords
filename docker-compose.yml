@@ -2,7 +2,7 @@ services:
   postgres:
     image: postgres:13
     environment:
-      POSTGRES_DB: UniversityMembers
+      POSTGRES_DB: UniversityRecords
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 123
     ports:

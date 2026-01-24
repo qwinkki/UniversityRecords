@@ -10,6 +10,7 @@ add_executable(UniversityRecords
     src/main.cpp
     src/common/common.cpp
     src/database/database.cpp
+    src/members/members.cpp
     src/professor/professor.cpp
     src/student/student.cpp
 )
@@ -20,7 +21,7 @@ if(WIN32)
     if(NOT DEFINED CMAKE_TOOLCHAIN_FILE)
         set(CMAKE_TOOLCHAIN_FILE ${CMAKE_CURRENT_SOURCE_DIR}/vcpkg/scripts/buildsystems/vcpkg.cmake CACHE STRING "")
     endif()
-    find_package(libpqxx CONFIG REQUIRED)
+        find_package(libpqxx CONFIG REQUIRED)
 
     target_include_directories(UniversityRecords PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/src

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "common/common.h"
+#include "database/database.h"
 
 class member {
 
@@ -40,3 +41,5 @@ public:
 
 	virtual ~member() = default;
 };
+
+int getGroupId(const std::string groupName);
