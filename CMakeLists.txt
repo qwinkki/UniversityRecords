@@ -13,6 +13,8 @@ add_executable(UniversityRecords
     src/members/members.cpp
     src/professor/professor.cpp
     src/student/student.cpp
+    src/admin/admin.cpp
+    src/loginMenu/logIn.cpp
 )
 
 # --- Cross-platform libpqxx setup ---

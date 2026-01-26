@@ -1,19 +1,22 @@
 #include "professor.h"
 
-void professorMenu(professor professor, std::vector<student> students){
+void professorSelfMenu(professor professor){
     char choose; 
+    std::vector<student> professorStudents = getStudentsByGroup(professor.getGroupCurator());
+
     do{
         clearScreen();
-        std::cout << "id: " << professor.getId() << " | " << professor.getName() << ' ' << professor.getSurname() 
-            << "\tGroup: " << professor.getGroupCurator() << " Professor subject: " << professor.getSubject();
+        professor.print();
 
-        std::cout << "\n\nWhat do you want to do:"
+        std::cout << "\nWhat do you want to do:"
             << "\n1. Show all information about professor"
             << "\n2. Edit students from " << professor.getGroupCurator()
-            << "\n3. "
+            << "\n3. Start next year for students in group " << professor.getGroupCurator()
             << "\n\n0. Exit"
             << "\nEnter number: ";
             std::cin >> choose; CINCHAR;
+
+        int studentId = 0;
 
         switch (choose)
         {
@@ -22,7 +25,33 @@ void professorMenu(professor professor, std::vector<student> students){
             professor.printAll();
             wait();
             break;
-        
+        case '2':
+            clearScreen();
+            for(auto& item : professorStudents){
+                std::cout << studentId << ". ";
+                item.print();
+                studentId++;
+            }
+            std::cout << "\nEnter number of student to edit: ";
+            std::cin >> studentId;
+
+            if(studentId < 0 || studentId >= professorStudents.size()){
+                std::cerr << COLORYELLOW << "Invalid student ID\n" << COLORDEFAULT;
+                wait();
+                break;
+            }
+            studentAdminMenu(professorStudents[studentId]);
+            
+            break;
+        case '3':
+            clearScreen();
+            for(auto& item : professorStudents){
+                item.nextYear();
+            }
+            wait();
+            break;
+        case '0':
+            break;
         default:
 			std::cout << COLORYELLOW << "Wront input" << COLORDEFAULT;
 			wait();
@@ -30,4 +59,96 @@ void professorMenu(professor professor, std::vector<student> students){
         }
 
     }while(choose != '0');
+}
+
+// database 
+void registerProfessorToDB(professor& professor, const std::string& login, const std::string& password){
+    int groupId = getGroupId(professor.getGroupCurator());
+    
+    if (groupId == -1) {
+        std::cerr << COLORRED << "Could not find or create a group ID.\n" << COLORDEFAULT;
+        return;
+    }
+
+    pqxx::work w(Database::getInstance());
+
+    try{
+        // check login
+        pqxx::result check = w.exec_params("SELECT 1 FROM users WHERE login = $1;", login);
+
+        if(!check.empty()){
+            std::cerr << COLORYELLOW << "Login already exists\n" << COLORDEFAULT;
+            return;
+        }
+
+        // creating user
+        pqxx::result userReg = w.exec_params("INSERT INTO users (login, password, role) VALUES ($1, $2, 'professor') RETURNING id;",
+            login, password);
+
+        unsigned int userId = userReg[0][0].as<int>();
+
+        // creating professor
+        w.exec_params("INSERT INTO professors (userId, name, surname, groupId, years, subject) VALUES ($1, $2, $3, $4, $5, $6);",
+            userId, professor.getName(), professor.getSurname(), groupId, professor.getYearsInUniversity(), professor.getSubject());
+
+        w.commit();
+        std::cout << "Professor " << professor.getName() << " succesfully registered\n";
+    }
+    catch(const std::exception& e){
+	    std::cerr << COLORRED << e.what() << '\n' << COLORDEFAULT;
+    }
+}
+void updateProfessorInDB(const professor& professor, const std::string& login, const std::string& password){
+    int groupId = getGroupId(professor.getGroupCurator());
+    
+    if (groupId == -1) {
+        std::cerr << COLORRED << "Could not find or create a group ID.\n" << COLORDEFAULT;
+        return;
+    }
+
+    pqxx::work w(Database::getInstance());
+
+	try{
+		// verify user
+		pqxx::result userRes = w.exec_params("SELECT id, role FROM users WHERE login = $1 AND password = $2;", login, password);
+		std::string role = userRes[0]["role"].as<std::string>();
+		if(userRes.empty() || role != "professor") throw "Wrong login or password";
+
+		// update professor info
+		w.exec_params("UPDATE professors SET name = $1, surname = $2, groupId = $3, years = $4, subject = $5 WHERE id = $6;",
+			professor.getName(), professor.getSurname(), groupId, professor.getYearsInUniversity(), professor.getSubject(), professor.getId());
+
+		w.commit();
+		std::cout << "Professor " << professor.getName() << " succesfully updated in database\n";
+	}
+	catch(const std::exception& e){
+	    std::cerr << COLORRED << e.what() << '\n' << COLORDEFAULT;
+	}
+}
+professor getProfessorFromDB(const std::string& login, const std::string& password){
+    pqxx::work w(Database::getInstance());
+
+	try{
+		pqxx::result userRes = w.exec_params("SELECT id, role FROM users WHERE login = $1 AND password = $2;", login, password);
+        std::string role = userRes[0]["role"].as<std::string>();
+        if(userRes.empty() || role != "professor") throw "Wrong login or password";
+        int userId = userRes[0]["id"].as<int>();
+        
+        // get professor and group
+        pqxx::result professorRes = w.exec_params("SELECT p.id, p.name, p.surname, p.years, g.groupName, p.subject FROM professors p JOIN groups g ON p.groupId = g.id WHERE p.userId = $1;", userId);
+        if(professorRes.empty()) throw "Professor profile not found";   
+        professor prof(
+            professorRes[0]["id"].as<int>(),
+            professorRes[0]["name"].as<std::string>(),
+            professorRes[0]["surname"].as<std::string>(),
+            professorRes[0]["years"].as<int>(),
+            professorRes[0]["groupName"].as<std::string>(),
+            professorRes[0]["subject"].as<std::string>()
+        );
+        return prof;
+	}
+	catch(const std::exception& e){
+	    std::cerr << COLORRED << e.what() << '\n' << COLORDEFAULT;
+		return professor(-1, "", "", -1, "", "");
+	}
 }

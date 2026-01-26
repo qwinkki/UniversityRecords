@@ -4,7 +4,8 @@
             "name": "Win32",
             "includePath": [
                 "${workspaceFolder}/**",
-                "${workspaceFolder}/vcpkg/installed/x64-windows/include"
+                "${workspaceFolder}/vcpkg/installed/x64-windows/include",
+                "/opt/homebrew/Cellar/libpqxx/7.10.4/include"
             ],
             "defines": [
                 "_DEBUG",

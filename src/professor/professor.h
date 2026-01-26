@@ -15,16 +15,23 @@ class professor : public member
         const std::string& name,
         const std::string& surname,
         unsigned int yearsInUniversity,
-        std::string groupCurator,
-        std::string subject
+        const std::string& groupCurator,
+        const std::string& subject
     )
         : member(id, name, surname, yearsInUniversity),
           groupCurator(groupCurator),
           subject(subject)
-    { }
+    {
+    }
+    professor(const professor& other)
+        : member(other),
+          groupCurator(other.groupCurator),
+          subject(other.subject)
+    {
+    }
 
-    void setGroupCurator(std::string& newGroup) { groupCurator = newGroup; }
-    void setSubject(std::string& newSubject) { subject = newSubject; }
+    void setGroupCurator(const std::string& newGroup) { groupCurator = newGroup; }
+    void setSubject(const std::string& newSubject) { subject = newSubject; }
 
     std::string getGroupCurator() const { return groupCurator; }
     std::string getSubject() const { return subject; }
@@ -45,4 +52,11 @@ class professor : public member
     }
 };
 
-void professorMenu(professor professor, std::vector<student> students);
+// menu
+void professorSelfMenu(professor professor);
+void professorAdminMenu(professor professor);
+
+// database
+void registerProfessorToDB(professor& professor, const std::string& login, const std::string& password);
+void updateProfessorInDB(const professor& professor, const std::string& login, const std::string& password);
+professor getProfessorFromDB(const std::string& login, const std::string& password);

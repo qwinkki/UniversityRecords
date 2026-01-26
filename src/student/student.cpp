@@ -1,6 +1,6 @@
 #include "student.h"
 
-void studentSelfMenu(student student){
+void studentSelfMenu(student student, std::string& login, std::string& password){
 	char choose;
 	do{
 		clearScreen();
@@ -8,16 +8,19 @@ void studentSelfMenu(student student){
 		student.printScore();
 		
 		std::cout << "\n1. Refresh"
+			<< "\n2. Show information about your professors"
 			<< "\n0. Exit"
 			<< "\nEnter number: ";
 		std::cin >> choose; CINCHAR;
 		if(choose == '1'){
-			// refresh marks from db
+			updateStudentInDB(student, login, password);
+		} else if(choose == '2'){
+			// update professor
 		}
 	}while(choose != '0');
 }
 
-void studentMenu(student student) {
+void studentAdminMenu(student student) {
 	char choose;
 	do {
 		clearScreen();
@@ -87,7 +90,6 @@ void studentMenu(student student) {
 		}
 	} while (choose != '0');
 }
-
 
 void registerStudentToDB(student& student, const std::string& login, const std::string& password){
     int groupId = getGroupId(student.getGroup());
@@ -220,5 +222,37 @@ student getStudentFromDB(const std::string& login, const std::string& password){
 	    std::cerr << COLORRED << e.what() << '\n' << COLORDEFAULT;
 		student errorStudent(-1, "", "", -1, "");
 		return errorStudent;
+	}
+}
+std::vector<student> getStudentsByGroup(const std::string& group){
+	pqxx::work w(Database::getInstance());
+	std::vector<student> studentsByGroup;
+
+	try{
+		pqxx::result r = w.exec_params("SELECT s.id, s.name, s.surname, s.educationYear, g.groupName "
+			"FROM students s "
+			"JOIN groups g ON s.groupId = g.id "
+			"WHERE g.groupName = $1;", 
+			group);
+		
+		if(r.empty()){
+			std::cout << COLORYELLOW << "No students found in group '" << group << "'\n" << COLORDEFAULT;
+			return studentsByGroup;
+		}
+		for(const auto& row : r){
+			studentsByGroup.emplace_back(
+				row["id"].as<int>(),
+				row["name"].as<std::string>(),
+				row["surname"].as<std::string>(),
+				row["educationYear"].as<int>(),
+				row["groupName"].as<std::string>()
+			);
+		}
+
+		return studentsByGroup;
+	}
+	catch(const std::exception& e){
+	    std::cerr << COLORRED << e.what() << '\n' << COLORDEFAULT;
+		return studentsByGroup;
 	}
 }

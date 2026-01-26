@@ -1,3 +1,5 @@
+#pragma once
+
 #include <algorithm>
 
 #include "common/common.h"
@@ -25,14 +27,14 @@ class student : public member {
 
 public:
     student(
-        unsigned id,
+        unsigned int id,
         const std::string& name,
         const std::string& surname,
         unsigned int educationYear,
         std::string group
     )
         : member(id, name, surname, educationYear),
-        group(std::move(group))
+        group(group)
     {
     }
     // constructor for copy class
@@ -251,9 +253,11 @@ public:
 
 // menu
 void studentSelfMenu(student student);
-void studentMenu(student student);
+void studentAdminMenu(student student);
 
 // database
 void registerStudentToDB(student& student, const std::string& login, const std::string& password);
-student getStudentFromDB(const std::string& login, const std::string& password);
 void updateStudentInDB(const student& student, const std::string& login, const std::string& password);
+student getStudentFromDB(const std::string& login, const std::string& password);
+
+std::vector<student> getStudentsByGroup(const std::string& group);
