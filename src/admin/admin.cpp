@@ -266,6 +266,8 @@ void runTests(){
         std::cerr << COLORRED << "Failed to add marks: " << e.what() << COLORDEFAULT << "\n\n";
     }
     
+    wait();
+
     // delete all test data
     std::cout << "Clearing up test data...\n";
     try {
