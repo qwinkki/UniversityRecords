@@ -10,9 +10,7 @@
 #define COLORRED "\033[31m"
 #define COLORDEFAULT "\033[0m"
 
-
-#undef max
-#define CINCHAR std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n')
+void cinChar();
 
 void wait();
 void clearScreen();

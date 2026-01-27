@@ -54,7 +54,7 @@ class professor : public member
 
 // menu
 void professorSelfMenu(professor professor);
-void professorAdminMenu(professor professor);
+void professorAdminMenu(professor& professor);
 
 // database
 void registerProfessorToDB(professor& professor, const std::string& login, const std::string& password);

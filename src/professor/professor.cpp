@@ -14,7 +14,7 @@ void professorSelfMenu(professor professor){
             << "\n3. Start next year for students in group " << professor.getGroupCurator()
             << "\n\n0. Exit"
             << "\nEnter number: ";
-            std::cin >> choose; CINCHAR;
+            std::cin >> choose; cinChar();
 
         int studentId = 0;
 
@@ -45,9 +45,9 @@ void professorSelfMenu(professor professor){
             break;
         case '3':
             clearScreen();
-            for(auto& item : professorStudents){
-                item.nextYear();
-            }
+            setStudentsNextYearByGroup(professor.getGroupCurator());
+            std::cout << "All students in group '" << professor.getGroupCurator() << "' have been advanced to the next year.\n";
+
             wait();
             break;
         case '0':
@@ -59,6 +59,64 @@ void professorSelfMenu(professor professor){
         }
 
     }while(choose != '0');
+}
+void professorAdminMenu(professor& professor) {
+    char choose;
+    do {
+        clearScreen();
+        professor.print();
+
+        std::cout << "\n\nWhat do you want to do:"
+            << "\n1. Print everything about professor"
+            << "\n2. Edit group curator"
+            << "\n3. Edit subject"
+            << "\n4. Start next year in group " << professor.getGroupCurator()
+            << "\n\n0. Exit"
+            << "\nEnter number: ";
+        std::cin >> choose; cinChar();
+
+        switch (choose)
+        {
+        case '1':
+            clearScreen();
+            professor.printAll();
+            wait();
+            break;
+        case '2':
+            clearScreen();
+            {
+                std::string newGroup;
+                std::cout << "Enter new group curator: ";
+                std::cin >> newGroup; cinChar();
+                professor.setGroupCurator(newGroup);
+                std::cout << COLORGREEN << "Group curator updated successfully\n" << COLORDEFAULT;
+            }
+            wait();
+            break;
+        case '3':
+            clearScreen();
+            {
+                std::string newSubject;
+                std::cout << "Enter new subject: ";
+                std::cin >> newSubject; cinChar();
+                professor.setSubject(newSubject);
+                std::cout << COLORGREEN << "Subject updated successfully\n" << COLORDEFAULT;
+            }
+            wait();
+            break;
+        case '4':
+            clearScreen();
+            professor.nextYear();
+            wait();
+            break;
+        case '0':
+            break;
+        default:
+            std::cout << COLORYELLOW << "Wront input" << COLORDEFAULT;
+            wait();
+            break;
+        }
+    } while (choose != '0');
 }
 
 // database 

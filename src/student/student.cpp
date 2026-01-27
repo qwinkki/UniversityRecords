@@ -11,7 +11,7 @@ void studentSelfMenu(student student, std::string& login, std::string& password)
 			<< "\n2. Show information about your professors"
 			<< "\n0. Exit"
 			<< "\nEnter number: ";
-		std::cin >> choose; CINCHAR;
+		std::cin >> choose; cinChar();
 		if(choose == '1'){
 			updateStudentInDB(student, login, password);
 		} else if(choose == '2'){
@@ -20,7 +20,7 @@ void studentSelfMenu(student student, std::string& login, std::string& password)
 	}while(choose != '0');
 }
 
-void studentAdminMenu(student student) {
+void studentAdminMenu(student& student) {
 	char choose;
 	do {
 		clearScreen();
@@ -37,7 +37,7 @@ void studentAdminMenu(student student) {
 			<< "\n8. Start session"
 			<< "\n\n0. Exit"
 			<< "\nEnter number: ";
-		std::cin >> choose; CINCHAR;
+		std::cin >> choose; cinChar();
 
 		switch (choose)
 		{
@@ -254,5 +254,19 @@ std::vector<student> getStudentsByGroup(const std::string& group){
 	catch(const std::exception& e){
 	    std::cerr << COLORRED << e.what() << '\n' << COLORDEFAULT;
 		return studentsByGroup;
+	}
+}
+void setStudentsNextYearByGroup(const std::string& group){
+	pqxx::work w(Database::getInstance());
+
+	try{
+		w.exec_params("UPDATE students SET educationYear = educationYear + 1 WHERE groupId = (SELECT id FROM groups WHERE groupName = $1);",
+			group);
+
+		w.commit();
+		std::cout << "All students in group '" << group << "' have been advanced to the next year.\n";
+	}
+	catch(const std::exception& e){
+	    std::cerr << COLORRED << e.what() << '\n' << COLORDEFAULT;
 	}
 }

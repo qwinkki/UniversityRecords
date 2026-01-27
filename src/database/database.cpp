@@ -35,7 +35,7 @@ void initializeDatabase() {
 		std::cout << "users table.. " << COLORGREEN << "OK\n" << COLORDEFAULT;
 
 		// admin
-		w.exec("CREATE TABLE IF NOT EXISTS admins (id SERIAL PRIMARY KEY, userId INT NOT NULL UNIQUE, FOREIGN KEY (userId) REFERENCES users(id));");
+		w.exec("CREATE TABLE IF NOT EXISTS admins (id SERIAL PRIMARY KEY, name TEXT NOT NULL UNIQUE, userId INT NOT NULL UNIQUE, FOREIGN KEY (userId) REFERENCES users(id));");
 		std::cout << "admins table.. " << COLORGREEN << "OK\n" << COLORDEFAULT;
 		
 		// groups, professors, students

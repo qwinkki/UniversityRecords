@@ -1,13 +1,15 @@
 #include "common.h"
 
-unsigned long int GlobalSessionYear = 0;
+void cinChar() {
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}
 
 void clearScreen() {
 #ifdef _WIN32
     // windows
     system("cls");
 #else
-    // linux, macos
+    // macos
     system("clear");
 #endif
 }
@@ -16,11 +18,4 @@ void wait() {
     std::cout << "Press Enter to continue...";
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     std::cin.get();
-}
-
-void nextGlobalSessionYear(){
-    GlobalSessionYear++;
-}
-unsigned long int getGlobalSessionYear(){
-    return GlobalSessionYear / 2;
 }

@@ -155,7 +155,7 @@ public:
 
             char choose;
             std::cout << "Do you want to sort A-Z? \n(y/n | default: y): ";
-            std::cin >> choose; CINCHAR;
+            std::cin >> choose; cinChar();
 
             std::vector<std::pair<std::string, unsigned short int>> sortedScore = score;
             if(choose == 'n' || choose == 'N')
@@ -177,7 +177,7 @@ public:
 
             char choose;
             std::cout << "Do you want to sort from 5 to 2? \n(y/n | default: y): ";
-            std::cin >> choose; CINCHAR;
+            std::cin >> choose; cinChar();
 
             std::vector<std::pair<std::string, unsigned short int>> sortedScore = score;
             if (choose == 'n' || choose == 'N')
@@ -253,7 +253,7 @@ public:
 
 // menu
 void studentSelfMenu(student student);
-void studentAdminMenu(student student);
+void studentAdminMenu(student& student);
 
 // database
 void registerStudentToDB(student& student, const std::string& login, const std::string& password);
@@ -261,3 +261,4 @@ void updateStudentInDB(const student& student, const std::string& login, const s
 student getStudentFromDB(const std::string& login, const std::string& password);
 
 std::vector<student> getStudentsByGroup(const std::string& group);
+void setStudentsNextYearByGroup(const std::string& group);
