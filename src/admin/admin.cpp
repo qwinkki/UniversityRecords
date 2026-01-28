@@ -6,6 +6,8 @@ void adminMenu(std::string& login){
     unsigned int usersChoose = 0;
 
     do{
+        clearScreen();
+        
         std::cout << "Admin panel as " << login 
             << "\nWhat do you want to do:"
             << "\n1. Show all users & edit them"

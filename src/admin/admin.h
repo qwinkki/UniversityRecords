@@ -5,7 +5,7 @@
 #include "student/student.h"
 
 // menu
-void adminMenu();
+void adminMenu(std::string& login);
 
 // database
 bool getAdminFromDB(std::string& login, std::string& password);

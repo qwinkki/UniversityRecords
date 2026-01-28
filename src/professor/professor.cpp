@@ -1,6 +1,6 @@
 #include "professor.h"
 
-void professorSelfMenu(professor professor){
+void professorSelfMenu(professor& professor){
     char choose; 
     std::vector<student> professorStudents = getStudentsByGroup(professor.getGroupCurator());
 

@@ -42,4 +42,6 @@ public:
 	virtual ~member() = default;
 };
 
+// database
+char getUserType(std::string& login);
 int getGroupId(const std::string groupName);

@@ -1,6 +1,6 @@
 #include "student.h"
 
-void studentSelfMenu(student student, std::string& login, std::string& password){
+void studentSelfMenu(student& student, std::string& login, std::string& password){
 	char choose;
 	do{
 		clearScreen();
@@ -13,7 +13,7 @@ void studentSelfMenu(student student, std::string& login, std::string& password)
 			<< "\nEnter number: ";
 		std::cin >> choose; cinChar();
 		if(choose == '1'){
-			updateStudentInDB(student, login, password);
+			getStudentFromDB(login, password);
 		} else if(choose == '2'){
 			// update professor
 		}

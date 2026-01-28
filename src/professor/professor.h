@@ -53,7 +53,7 @@ class professor : public member
 };
 
 // menu
-void professorSelfMenu(professor professor);
+void professorSelfMenu(professor& professor);
 void professorAdminMenu(professor& professor);
 
 // database

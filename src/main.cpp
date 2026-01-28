@@ -2,8 +2,7 @@
 
 int main() {
 	initializeDatabase();
-
-    runTests();
+    logIn();
 
     return 0;
 }

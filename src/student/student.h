@@ -252,7 +252,7 @@ public:
 };
 
 // menu
-void studentSelfMenu(student student);
+void studentSelfMenu(student& student, std::string& login, std::string& password);
 void studentAdminMenu(student& student);
 
 // database
