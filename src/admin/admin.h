@@ -6,6 +6,7 @@
 
 // menu
 void adminMenu(std::string& login);
+void createUser();
 
 // database
 bool getAdminFromDB(std::string& login, std::string& password);
@@ -16,3 +17,6 @@ void startEditingStudent(int studentId);
 
 // tests
 void runTests();
+
+// extensions
+void checkExtensionsAdmin();

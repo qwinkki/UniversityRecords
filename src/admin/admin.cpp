@@ -13,6 +13,8 @@ void adminMenu(std::string& login){
             << "\n1. Show all users & edit them"
             << "\n2. Run tests"
             << "\n3. Start next year for all members"
+            << "\n4. Check group, marks and subject extensions (clear if any issues found)"
+            << "\n5. Register user (professor/student)"
             << "\n0. Exit"
             << "\nEnter number: ";
         std::cin >> choose; cinChar();
@@ -57,6 +59,16 @@ void adminMenu(std::string& login){
                         std::cerr << COLORRED << "Failed to start next year: " << e.what() << COLORDEFAULT << "\n\n";
                     }
                 }
+                wait();
+                break;
+            case '4':
+                clearScreen();
+                checkExtensionsAdmin();
+                wait();
+                break;
+            case '5':
+                clearScreen();
+                createUser();
                 wait();
                 break;
             case '0':
@@ -294,4 +306,64 @@ void runTests(){
     }
     
     std::cout << "Tests completed.\n";
+}
+
+void checkExtensionsAdmin(){
+    std::cout << "Starting extension checks...\n\n";
+    pqxx::work w(Database::getInstance());
+
+    try{
+        std::cout << "Checking scores without valid students or subjects...\n";
+
+        pqxx::result r = w.exec(
+            "DELETE FROM scores "
+            "WHERE studentId NOT IN (SELECT id FROM students) "
+            "OR subjectId NOT IN (SELECT id FROM subjects);"
+        );
+        std::cout << COLORGREEN << "Scores extension check completed successfully\n" << COLORDEFAULT;
+
+        std::cout << "Checking subjects without assigned professors and students...\n";
+        r = w.exec(
+            "DELETE FROM subjects "
+            "WHERE id NOT IN (SELECT DISTINCT subjectId FROM scores);"
+            "DELETE FROM subjects "
+            "WHERE id NOT IN (SELECT DISTINCT subjectId FROM professors);"
+        );
+        std::cout << COLORGREEN << "Subjects extension check completed successfully\n" << COLORDEFAULT;
+
+        std::cout << "Checking groups without assigned professors and students...\n";
+        r = w.exec(
+            "DELETE FROM groups "
+            "WHERE id NOT IN (SELECT DISTINCT groupId FROM professors);"
+            "DELETE FROM groups "
+            "WHERE id NOT IN (SELECT DISTINCT groupId FROM students);"
+        );
+        std::cout << COLORGREEN << "Groups extension check completed successfully\n" << COLORDEFAULT;
+
+        std::cout << "\nAll extension checks completed.\n";
+        w.commit();
+    }
+    catch(const std::exception& e){
+        std::cerr << COLORRED << "Error checking extensions: " << e.what() << COLORDEFAULT << "\n";
+    }
+}
+
+void createUser(){
+    std::cout << "Creating a new user...\n";
+    char roleChoice;
+    std::string login, password;
+
+    std::cout << "Enter role of user to create (1. professor, 2. student): ";
+    std::cin >> roleChoice; cinChar();
+
+    std::cout << "Enter login: ";
+    std::getline(std::cin, login);
+    std::cout << "Enter password: ";
+    std::getline(std::cin, password);
+
+    if(roleChoice == '1'){
+        
+    } else if(roleChoice == '2'){
+        
+    } 
 }
