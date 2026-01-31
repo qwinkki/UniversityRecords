@@ -44,4 +44,4 @@ public:
 
 // database
 char getUserType(std::string& login);
-int getGroupId(const std::string groupName);
+int getGroupId(pqxx::work& w, const std::string& groupName);

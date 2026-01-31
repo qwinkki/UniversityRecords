@@ -120,66 +120,98 @@ void professorAdminMenu(professor& professor) {
 }
 
 // database 
-void registerProfessorToDB(professor& professor, const std::string& login, const std::string& password){
-    int groupId = getGroupId(professor.getGroupCurator());
-    
-    if (groupId == -1) {
-        std::cerr << COLORRED << "Could not find or create a group ID.\n" << COLORDEFAULT;
-        return;
-    }
-
+void registerProfessorToDB(professor& professor, const std::string& login, const std::string& password)
+{
     pqxx::work w(Database::getInstance());
 
-    try{
-        // check login
-        pqxx::result check = w.exec_params("SELECT 1 FROM users WHERE login = $1;", login);
+    try {
+        int groupId = getGroupId(w, professor.getGroupCurator());
 
-        if(!check.empty()){
-            std::cerr << COLORYELLOW << "Login already exists\n" << COLORDEFAULT;
-            return;
+        // check login
+        pqxx::result check = w.exec_params(
+            "SELECT 1 FROM users WHERE login = $1;",
+            login
+        );
+
+        if (!check.empty())
+            throw std::runtime_error("Login already exists");
+
+        pqxx::result userReg = w.exec_params(
+            "INSERT INTO users (login, password, role) "
+            "VALUES ($1, $2, 'professor') RETURNING id;",
+            login, password
+        );
+
+        int userId = userReg[0][0].as<int>();
+
+        // subject
+        pqxx::result subjectRes = w.exec_params(
+            "SELECT id FROM subjects WHERE name = $1;",
+            professor.getSubject()
+        );
+
+        int subjectId;
+        if (!subjectRes.empty())
+            subjectId = subjectRes[0][0].as<int>();
+        else {
+            pqxx::result newSubjectRes = w.exec_params(
+                "INSERT INTO subjects (name) VALUES ($1) RETURNING id;",
+                professor.getSubject()
+            );
+            subjectId = newSubjectRes[0][0].as<int>();
         }
 
-        // creating user
-        pqxx::result userReg = w.exec_params("INSERT INTO users (login, password, role) VALUES ($1, $2, 'professor') RETURNING id;",
-            login, password);
-
-        unsigned int userId = userReg[0][0].as<int>();
-
-        // creating professor
-        w.exec_params("INSERT INTO professors (userId, name, surname, groupId, years, subject) VALUES ($1, $2, $3, $4, $5, $6);",
-            userId, professor.getName(), professor.getSurname(), groupId, professor.getYearsInUniversity(), professor.getSubject());
+        w.exec_params(
+            "INSERT INTO professors (userId, name, surname, groupId, years, subjectId) "
+            "VALUES ($1, $2, $3, $4, $5, $6);",
+            userId,
+            professor.getName(),
+            professor.getSurname(),
+            groupId,
+            professor.getYearsInUniversity(),
+            subjectId
+        );
 
         w.commit();
-        std::cout << "Professor " << professor.getName() << " succesfully registered\n";
+        std::cout << "Professor registered successfully\n";
     }
-    catch(const std::exception& e){
-	    std::cerr << COLORRED << e.what() << '\n' << COLORDEFAULT;
+    catch (const std::exception& e) {
+        w.abort();
+        std::cerr << COLORRED << e.what() << COLORDEFAULT << '\n';
     }
 }
-void updateProfessorInDB(const professor& professor, const std::string& login, const std::string& password){
-    int groupId = getGroupId(professor.getGroupCurator());
-    
-    if (groupId == -1) {
-        std::cerr << COLORRED << "Could not find or create a group ID.\n" << COLORDEFAULT;
-        return;
-    }
 
+void updateProfessorInDB(const professor& professor, const std::string& login, const std::string& password){
     pqxx::work w(Database::getInstance());
 
 	try{
+        int groupId = getGroupId(w, professor.getGroupCurator());
+
 		// verify user
 		pqxx::result userRes = w.exec_params("SELECT id, role FROM users WHERE login = $1 AND password = $2;", login, password);
 		std::string role = userRes[0]["role"].as<std::string>();
 		if(userRes.empty() || role != "professor") throw "Wrong login or password";
 
-		// update professor info
-		w.exec_params("UPDATE professors SET name = $1, surname = $2, groupId = $3, years = $4, subject = $5 WHERE id = $6;",
-			professor.getName(), professor.getSurname(), groupId, professor.getYearsInUniversity(), professor.getSubject(), professor.getId());
+        // subject
+        pqxx::result subjectRes = w.exec_params("SELECT id FROM subjects WHERE name = $1;", professor.getSubject());
+        int subjectId;
+        if(!subjectRes.empty()){
+            subjectId = subjectRes[0][0].as<int>();
+        }
+        else{
+            pqxx::result newSubjectRes = w.exec_params("INSERT INTO subjects (name) VALUES ($1) RETURNING id;", professor.getSubject());
+            subjectId = newSubjectRes[0][0].as<int>();
+        }
 
+		// update professor info
+		w.exec_params("UPDATE professors SET name = $1, surname = $2, groupId = $3, years = $4, subjectId = $5 WHERE id = $6;",
+			professor.getName(), professor.getSurname(), groupId, professor.getYearsInUniversity(), subjectId, professor.getId());
+        
 		w.commit();
-		std::cout << "Professor " << professor.getName() << " succesfully updated in database\n";
+		std::cout << COLORGREEN << "Professor " << professor.getName() << " succesfully updated in database\n" << COLORDEFAULT;
 	}
 	catch(const std::exception& e){
+        w.abort();
 	    std::cerr << COLORRED << e.what() << '\n' << COLORDEFAULT;
 	}
 }
@@ -191,21 +223,31 @@ professor getProfessorFromDB(const std::string& login, const std::string& passwo
         std::string role = userRes[0]["role"].as<std::string>();
         if(userRes.empty() || role != "professor") throw "Wrong login or password";
         int userId = userRes[0]["id"].as<int>();
+
+        int subjectId = -1;
+        // get subject id
+        pqxx::result subjectRes = w.exec_params("SELECT subjectId FROM professors WHERE userId = $1;", userId);
+        if(!subjectRes.empty()){
+            subjectId = subjectRes[0][0].as<int>();
+        }
         
-        // get professor and group
-        pqxx::result professorRes = w.exec_params("SELECT p.id, p.name, p.surname, p.years, g.groupName, p.subject FROM professors p JOIN groups g ON p.groupId = g.id WHERE p.userId = $1;", userId);
+        // get professor, group and subject
+        pqxx::result professorRes = w.exec_params("SELECT p.id, p.name, p.surname, p.years, g.groupName, p.subjectId FROM professors p JOIN groups g ON p.groupId = g.id WHERE p.userId = $1 AND subjectId = $2;", 
+            userId, subjectId);
         if(professorRes.empty()) throw "Professor profile not found";   
+
         professor prof(
             professorRes[0]["id"].as<int>(),
             professorRes[0]["name"].as<std::string>(),
             professorRes[0]["surname"].as<std::string>(),
             professorRes[0]["years"].as<int>(),
             professorRes[0]["groupName"].as<std::string>(),
-            professorRes[0]["subject"].as<std::string>()
+            professorRes[0]["subjectId"].as<std::string>()
         );
         return prof;
 	}
 	catch(const std::exception& e){
+        w.abort();
 	    std::cerr << COLORRED << e.what() << '\n' << COLORDEFAULT;
 		return professor(-1, "", "", -1, "", "");
 	}

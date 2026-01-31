@@ -325,9 +325,8 @@ void checkExtensionsAdmin(){
         std::cout << "Checking subjects without assigned professors and students...\n";
         r = w.exec(
             "DELETE FROM subjects "
-            "WHERE id NOT IN (SELECT DISTINCT subjectId FROM scores);"
-            "DELETE FROM subjects "
-            "WHERE id NOT IN (SELECT DISTINCT subjectId FROM professors);"
+            "WHERE id NOT IN (SELECT DISTINCT subjectId FROM scores) "
+            "AND id NOT IN (SELECT DISTINCT subjectId FROM professors);"
         );
         std::cout << COLORGREEN << "Subjects extension check completed successfully\n" << COLORDEFAULT;
 
@@ -362,8 +361,36 @@ void createUser(){
     std::getline(std::cin, password);
 
     if(roleChoice == '1'){
-        
+        unsigned int id = -1, yearsInUniversity = 0;
+        std::string name, surname, groupCurator, subject;
+
+        std::cout << "Enter professor name: ";
+        std::getline(std::cin, name);
+        std::cout << "Enter professor surname: ";
+        std::getline(std::cin, surname);
+        std::cout << "Enter years in university: ";
+        std::cin >> yearsInUniversity; cinChar();
+        std::cout << "Enter group curator: ";
+        std::getline(std::cin, groupCurator);
+        std::cout << "Enter subject: ";
+        std::getline(std::cin, subject);
+
+        professor newProfessor(id, name, surname, yearsInUniversity, groupCurator, subject);
+        registerProfessorToDB(newProfessor, login, password);
     } else if(roleChoice == '2'){
-        
+        unsigned int id = -1, educationYear = 0;
+        std::string name, surname, group;
+
+        std::cout << "Enter student name: ";
+        std::getline(std::cin, name);
+        std::cout << "Enter student surname: ";
+        std::getline(std::cin, surname);
+        std::cout << "Enter education year: ";
+        std::cin >> educationYear; cinChar();
+        std::cout << "Enter group: ";
+        std::getline(std::cin, group);
+
+        student newStudent(id, name, surname, educationYear, group);
+        registerStudentToDB(newStudent, login, password);
     } 
 }

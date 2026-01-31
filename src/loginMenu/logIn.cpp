@@ -33,6 +33,7 @@ void logIn(){
         }
         else if(type == 'n') std::cout << "Wrong login or password\n";
         else if(type == 'e') std::cout << "Error\n";
+        else std::cout << "Unknown user type\n";
         
         wait();
     }

@@ -92,16 +92,11 @@ void studentAdminMenu(student& student) {
 }
 
 void registerStudentToDB(student& student, const std::string& login, const std::string& password){
-    int groupId = getGroupId(student.getGroup());
-
-    if (groupId == -1) {
-        std::cerr << COLORRED << "Could not find or create a group ID.\n" << COLORDEFAULT;
-            return;
-    }
-
 	pqxx::work w(Database::getInstance());
 
     try{
+		int groupId = getGroupId(w, student.getGroup());
+
         // check login
         pqxx::result check = w.exec_params("SELECT 1 FROM users WHERE login = $1;", login);
 
@@ -122,7 +117,7 @@ void registerStudentToDB(student& student, const std::string& login, const std::
 
 		// subjects
 		if(student.getScore().size() > 0){
-			for(auto& item : student.getScore()){
+			for(const auto& item : student.getScore()){
 				pqxx::result subjectRes = w.exec_params("SELECT id FROM subjects WHERE name = $1;", item.first);
 
 				int hasSubjectId;
@@ -140,7 +135,7 @@ void registerStudentToDB(student& student, const std::string& login, const std::
 		}
 
         w.commit();
-        std::cout << "Student " << student.getName() << " succesfully registered\n";
+        std::cout << COLORGREEN << "Student " << student.getName() << " succesfully registered\n" << COLORDEFAULT;
     }
     catch(const std::exception& e){
 	    std::cerr << COLORRED << e.what() << '\n' << COLORDEFAULT;
