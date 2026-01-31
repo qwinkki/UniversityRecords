@@ -138,8 +138,9 @@ void startEditingProfessor(int professorId){
     pqxx::work w(Database::getInstance());
 
     try{
-        pqxx::result r = w.exec_params("SELECT p.id, p.name, p.surname, p.years, p.subject, g.groupName "
+        pqxx::result r = w.exec_params("SELECT p.id, p.name, p.surname, p.years, sub.name AS subject, g.groupName "
             "FROM professors p "
+            "JOIN subjects sub ON p.subjectId = sub.id "
             "JOIN groups g ON p.groupId = g.id "
             "WHERE p.id = $1;", 
             professorId);
@@ -156,8 +157,10 @@ void startEditingProfessor(int professorId){
             r[0]["groupName"].as<std::string>()
         );
 
-        professorAdminMenu(prof);
         w.commit();
+
+        professorAdminMenu(prof);
+        updateProfessorInDB(prof);
     }
     catch(const std::exception& e){
         std::cerr << COLORRED << e.what() << '\n' << COLORDEFAULT;
@@ -195,8 +198,10 @@ void startEditingStudent(int studentId){
             stud.setScore(scores);
         }
 
-        studentAdminMenu(stud);
         w.commit();
+
+        studentAdminMenu(stud);
+        updateStudentInDB(stud);
     }
     catch(const std::exception& e){
         std::cerr << COLORRED << e.what() << '\n' << COLORDEFAULT;

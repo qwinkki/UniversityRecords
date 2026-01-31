@@ -41,6 +41,7 @@ void professorSelfMenu(professor& professor){
                 break;
             }
             studentAdminMenu(professorStudents[studentId]);
+            updateStudentInDB(professorStudents[studentId]);
             
             break;
         case '3':
@@ -116,6 +117,8 @@ void professorAdminMenu(professor& professor) {
             wait();
             break;
         }
+
+        updateProfessorInDB(professor);
     } while (choose != '0');
 }
 
@@ -181,16 +184,11 @@ void registerProfessorToDB(professor& professor, const std::string& login, const
     }
 }
 
-void updateProfessorInDB(const professor& professor, const std::string& login, const std::string& password){
+void updateProfessorInDB(const professor& professor){
     pqxx::work w(Database::getInstance());
 
 	try{
         int groupId = getGroupId(w, professor.getGroupCurator());
-
-		// verify user
-		pqxx::result userRes = w.exec_params("SELECT id, role FROM users WHERE login = $1 AND password = $2;", login, password);
-		std::string role = userRes[0]["role"].as<std::string>();
-		if(userRes.empty() || role != "professor") throw "Wrong login or password";
 
         // subject
         pqxx::result subjectRes = w.exec_params("SELECT id FROM subjects WHERE name = $1;", professor.getSubject());

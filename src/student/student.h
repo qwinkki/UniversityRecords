@@ -257,8 +257,10 @@ void studentAdminMenu(student& student);
 
 // database
 void registerStudentToDB(student& student, const std::string& login, const std::string& password);
-void updateStudentInDB(const student& student, const std::string& login, const std::string& password);
+void updateStudentInDB(const student& student);
 student getStudentFromDB(const std::string& login, const std::string& password);
 
 std::vector<student> getStudentsByGroup(const std::string& group);
 void setStudentsNextYearByGroup(const std::string& group);
+
+void printProfessorsForStudent(const std::string& group);

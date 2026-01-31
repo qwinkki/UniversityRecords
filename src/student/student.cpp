@@ -15,7 +15,12 @@ void studentSelfMenu(student& student, std::string& login, std::string& password
 		if(choose == '1'){
 			getStudentFromDB(login, password);
 		} else if(choose == '2'){
-			// update professor
+			clearScreen();
+			printProfessorsForStudent(student.getGroup());
+			wait();
+		} else if(choose != '0'){
+			std::cout << COLORYELLOW << "Wront input" << COLORDEFAULT;
+			wait();
 		}
 	}while(choose != '0');
 }
@@ -91,6 +96,7 @@ void studentAdminMenu(student& student) {
 	} while (choose != '0');
 }
 
+// database
 void registerStudentToDB(student& student, const std::string& login, const std::string& password){
 	pqxx::work w(Database::getInstance());
 
@@ -141,15 +147,10 @@ void registerStudentToDB(student& student, const std::string& login, const std::
 	    std::cerr << COLORRED << e.what() << '\n' << COLORDEFAULT;
     }
 }
-void updateStudentInDB(const student& student, const std::string& login, const std::string& password){
+void updateStudentInDB(const student& student){
 	pqxx::work w(Database::getInstance());
 
 	try{
-		// verify user
-		pqxx::result userRes = w.exec_params("SELECT id, role FROM users WHERE login = $1 AND password = $2;", login, password);
-		std::string role = userRes[0]["role"].as<std::string>();
-		if(userRes.empty() || role != "student") throw "Wrong login or password";
-
 		// update student info
 		w.exec_params("UPDATE students SET name = $1, surname = $2, educationYear = $3 WHERE id = $4;",
 			student.getName(), student.getSurname(), student.getYearsInUniversity(), student.getId());
@@ -260,6 +261,36 @@ void setStudentsNextYearByGroup(const std::string& group){
 
 		w.commit();
 		std::cout << "All students in group '" << group << "' have been advanced to the next year.\n";
+	}
+	catch(const std::exception& e){
+	    std::cerr << COLORRED << e.what() << '\n' << COLORDEFAULT;
+	}
+}
+
+void printProfessorsForStudent(const std::string& group){
+	pqxx::work w(Database::getInstance());
+	
+	try{
+		pqxx::result r = w.exec_params(
+			"SELECT p.id, p.name, p.surname, sub.name AS subjectName "
+			"FROM professors p "
+			"JOIN subjects sub ON p.subjectId = sub.id "
+			"WHERE p.groupId = (SELECT id FROM groups WHERE groupName = $1);",
+			group
+		);
+
+		if(r.empty()){
+			std::cout << COLORYELLOW << "No professors found for group '" << group << "'\n" << COLORDEFAULT;
+			return;
+		}
+
+		std::cout << "Professors for group '" << group << "':\n";
+		for(const auto& row : r){
+			std::cout << "ID: " << row["id"].as<int>()
+				<< "\tName: " << row["name"].as<std::string>()
+				<< "\tSurname: " << row["surname"].as<std::string>()
+				<< "\tSubject: " << row["subjectName"].as<std::string>() << '\n';
+		}
 	}
 	catch(const std::exception& e){
 	    std::cerr << COLORRED << e.what() << '\n' << COLORDEFAULT;
