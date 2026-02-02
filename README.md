@@ -10,13 +10,23 @@ Main idea: like in my university first of all you need to create an admin accoun
 
 # To install and run
 ## Windows
+1. Install VS Code or other redactor (optional)
+2. Install Cmake
+3. Install libpqxx from vcpkg in the same directory, where the project is located
+4. Install docker
+5. Use git clone *, then go to the path of the project in the cmd
+6. In the /PATH/ of the project run "docker-compose up -d" (or to see more info "docker-compose up --build")
+7. In cmd type "mkdir build" then go to the build folder 
+9. There type "cmake .. -DCMAKE_TOOLCHAIN_FILE=vcpkg/scripts/buildsystems/vcpkg.cmake" (or other folder path to the vcpkg.cmake !This need to add libpqxx to the project)
+10. Then "cmake --build ."
+11. Then run "./Debug/UniversityRecords.exe" file 
 
 ## MacOs
 1. Install VS Code or other redactor (optional)
 2. Install Cmake
 3. Install libpqxx with brew
 4. Install docker
-5. Use git clone *, then go to path of the project in the terminal
+5. Use git clone *, then go to the path of the project in the terminal
 6. In the /PATH/ of the project run "docker-compose up -d" (or to see more info "docker-compose up --build")
 7. Create folder 'build' then in termenal go to folder "cd build"
 8. Type "cmake .."
@@ -25,6 +35,6 @@ Main idea: like in my university first of all you need to create an admin accoun
 
 # When first start the project
 - Install program to see DB (recomendation: Dbeaver)
-- Open and connect (login and password you can see in the docker-compose.yml file (DBName: UniversityRecords, DBPassword: 123))
-
-(Project for qwinki resume)
+- Open and connect (login and password you can see in the docker-compose.yml file (DBName: UniversityRecords, DBPassword: 123))  
+  
+! (Project for qwinki resume)
