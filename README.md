@@ -38,5 +38,15 @@ Main idea: like in my university only admin can create new users (professors or 
 - Install program to see DB (recomendation: Dbeaver)
 - Open and connect (login and password you can see in the docker-compose.yml file (DBName: `UniversityRecords`, DBPassword: `123`))
 - There you need to create an admin accound with type: `admin`. Then log in as admin.
+
+### Database architecture
+<img width="774" height="525" alt="Снимок экрана 2026-02-03 в 21 50 55" src="https://github.com/user-attachments/assets/78530298-4154-4aa6-944f-4a2d87f7ab42" />  
+
+
+## Problem on Windows
+### Problem with port 5432
+> ##### If you have problen that your db cant connect to program
+> In cmd use command `netstat -aon | findstr :5432`  
+> Spell `taskkill /PID (id of port) /F`  
   
 > `(Project for qwinki resume)` :blush:
