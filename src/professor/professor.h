@@ -57,6 +57,6 @@ void professorSelfMenu(professor& professor);
 void professorAdminMenu(professor& professor);
 
 // database
-void registerProfessorToDB(professor& professor, const std::string& login, const std::string& password);
+void registerProfessorToDB(professor& professor, const std::string& login, std::string& password);
 void updateProfessorInDB(const professor& professor);
-professor getProfessorFromDB(const std::string& login, const std::string& password);
+professor getProfessorFromDB(const std::string& login, std::string& password);

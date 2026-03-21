@@ -123,11 +123,13 @@ void professorAdminMenu(professor& professor) {
 }
 
 // database 
-void registerProfessorToDB(professor& professor, const std::string& login, const std::string& password)
+void registerProfessorToDB(professor& professor, const std::string& login, std::string& password)
 {
     pqxx::work w(Database::getInstance());
 
     try {
+        hashPasswdSHA512(password);
+
         int groupId = getGroupId(w, professor.getGroupCurator());
 
         // check login
@@ -213,10 +215,12 @@ void updateProfessorInDB(const professor& professor){
 	    std::cerr << COLORRED << e.what() << '\n' << COLORDEFAULT;
 	}
 }
-professor getProfessorFromDB(const std::string& login, const std::string& password){
+professor getProfessorFromDB(const std::string& login, std::string& password){
     pqxx::work w(Database::getInstance());
 
 	try{
+        hashPasswdSHA512(password);
+
 		pqxx::result userRes = w.exec_params("SELECT id, role FROM users WHERE login = $1 AND password = $2;", login, password);
         std::string role = userRes[0]["role"].as<std::string>();
         if(userRes.empty() || role != "professor") throw "Wrong login or password";

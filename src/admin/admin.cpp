@@ -86,6 +86,8 @@ bool getAdminFromDB(std::string& login, std::string& password){
     pqxx::work w(Database::getInstance());
 
     try{
+        hashPasswdSHA512(password);
+
         pqxx::result r = w.exec_params("SELECT login, password FROM users WHERE role = 'admin' AND login = $1 AND password = $2 LIMIT 1;", 
             login, password);
         if(r.empty()){
@@ -228,7 +230,9 @@ void runTests(){
     std::cout << "Test 2: Adding a professor...\n";
     try {
         professor testProf(0, "testName", "testSurname", 5, "testGroup", "Mathematics");
-        registerProfessorToDB(testProf, "prof_test", "prof123");
+        std::string profLogin("prof_test");
+        std::string profPassword("prof123");
+        registerProfessorToDB(testProf, profLogin, profPassword);
         std::cout << COLORGREEN << "Professor added successfully" << COLORDEFAULT << "\n\n";
     } catch (const std::exception& e) {
         std::cerr << COLORRED << "Failed to add professor: " << e.what() << COLORDEFAULT << "\n\n";
@@ -240,7 +244,9 @@ void runTests(){
         student testStud(0, "testStudent", "testSurname", 2, "testGroup");
         // Add some test marks
         testStud.setScore({{"test1", 4}, {"test2", 5}, {"test3", 3}});
-        registerStudentToDB(testStud, "stud_test", "stud123");
+        std::string studLogin("stud_test");
+        std::string studPassword("stud123");
+        registerStudentToDB(testStud, studLogin, studPassword);
         std::cout << COLORGREEN << "Student added successfully" << COLORDEFAULT << "\n\n";
     } catch (const std::exception& e) {
         std::cerr << COLORRED << "Failed to add student: " << e.what() << COLORDEFAULT << "\n\n";

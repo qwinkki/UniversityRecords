@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <limits>
+#include "crypt/hashpasswd.h"
 
 #define COLORGREEN "\033[32m"
 #define COLORYELLOW "\033[33m"

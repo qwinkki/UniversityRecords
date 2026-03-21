@@ -25,9 +25,36 @@ Database::Database() {
 		}
 }
 
+// create default admin if not exists
+void createDefaultAdmin(){
+    std::cout << "Create default admin if not exists...\nEnter login for default admin: ";
+    std::string login;
+    std::cin >> login; cinChar();
+    std::cout << "Enter password for default admin: ";
+    std::string password;
+    std::cin >> password; cinChar();
+
+	pqxx::work w(Database::getInstance());
+    try{
+        pqxx::result r = w.exec("SELECT id FROM users WHERE role = 'admin' AND login = 'admin' LIMIT 1;");
+        if(r.empty()){
+            hashPasswdSHA512(password);
+            w.exec_params("INSERT INTO users (login, password, role) VALUES ($1, $2, 'admin');", login, password);
+            w.commit();
+            std::cout << COLORGREEN << "Default admin created successfully (login: " << login << ", hashed password: " << password << ")\n" << COLORDEFAULT;
+        } else {
+            std::cout << COLORGREEN << "Default admin already exists\n" << COLORDEFAULT;
+        }
+    }
+    catch(const std::exception& e){
+        std::cerr << COLORRED << "Failed to create default admin: " << e.what() << COLORDEFAULT << "\n";
+    }
+}
+
 void initializeDatabase() {
 	try {
 		pqxx::work w(Database::getInstance());
+
 		std::cout << "Initializing database.. " << COLORGREEN << "OK\n" << COLORDEFAULT;
 		
 		// login password
@@ -48,7 +75,12 @@ void initializeDatabase() {
 		w.exec("CREATE TABLE IF NOT EXISTS scores (id SERIAL PRIMARY KEY, studentId INT NOT NULL, subjectId INT NOT NULL, mark INT NOT NULL, FOREIGN KEY (studentId) REFERENCES students(id), FOREIGN KEY (subjectId) REFERENCES subjects(id), UNIQUE(studentId, subjectId));");
 		std::cout << "scores tables.. " << COLORGREEN << "OK\n" << COLORDEFAULT;
 
+		pqxx::result r = w.exec("SELECT id FROM users WHERE role = 'admin' LIMIT 1;");
+
 		w.commit();
+
+		if(r.empty())
+			createDefaultAdmin();
 
 		wait();
 	}

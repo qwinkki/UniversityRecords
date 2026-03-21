@@ -15,6 +15,7 @@ add_executable(UniversityRecords
     src/student/student.cpp
     src/admin/admin.cpp
     src/loginMenu/logIn.cpp
+    src/crypt/hashpasswd.cpp
 )
 
 # --- Cross-platform libpqxx setup ---
