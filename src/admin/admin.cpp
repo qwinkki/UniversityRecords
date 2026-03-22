@@ -150,7 +150,7 @@ void startEditingProfessor(int professorId){
             std::cout << COLORYELLOW << "Professor with ID " << professorId << " not found\n" << COLORDEFAULT;
             return;
         }
-        professor prof(
+        professor* prof = new professor(
             r[0]["id"].as<int>(),
             r[0]["name"].as<std::string>(),
             r[0]["surname"].as<std::string>(),
@@ -161,8 +161,9 @@ void startEditingProfessor(int professorId){
 
         w.commit();
 
-        professorAdminMenu(prof);
-        updateProfessorInDB(prof);
+        professorAdminMenu(*prof);
+        updateProfessorInDB(*prof);
+        delete prof;
     }
     catch(const std::exception& e){
         std::cerr << COLORRED << e.what() << '\n' << COLORDEFAULT;
@@ -181,7 +182,7 @@ void startEditingStudent(int studentId){
             std::cout << COLORYELLOW << "Student with ID " << studentId << " not found\n" << COLORDEFAULT;
             return;
         }
-        student stud(
+        student* stud = new student(
             r[0]["id"].as<int>(),
             r[0]["name"].as<std::string>(),
             r[0]["surname"].as<std::string>(),
@@ -197,13 +198,14 @@ void startEditingStudent(int studentId){
             for(const auto& row : scoresRes){
                 scores.emplace_back(row["name"].as<std::string>(), row["mark"].as<unsigned short int>());
             }
-            stud.setScore(scores);
+            stud->setScore(scores);
         }
 
         w.commit();
 
-        studentAdminMenu(stud);
-        updateStudentInDB(stud);
+        studentAdminMenu(*stud);
+        updateStudentInDB(*stud);
+        delete stud;
     }
     catch(const std::exception& e){
         std::cerr << COLORRED << e.what() << '\n' << COLORDEFAULT;
@@ -229,10 +231,11 @@ void runTests(){
     // add a professor
     std::cout << "Test 2: Adding a professor...\n";
     try {
-        professor testProf(0, "testName", "testSurname", 5, "testGroup", "Mathematics");
+        professor* testProf = new professor(0, "testName", "testSurname", 5, "testGroup", "Mathematics");
         std::string profLogin("prof_test");
         std::string profPassword("prof123");
-        registerProfessorToDB(testProf, profLogin, profPassword);
+        registerProfessorToDB(*testProf, profLogin, profPassword);
+        delete testProf;
         std::cout << COLORGREEN << "Professor added successfully" << COLORDEFAULT << "\n\n";
     } catch (const std::exception& e) {
         std::cerr << COLORRED << "Failed to add professor: " << e.what() << COLORDEFAULT << "\n\n";
@@ -241,12 +244,13 @@ void runTests(){
     // add a student
     std::cout << "Test 3: Adding a student...\n";
     try {
-        student testStud(0, "testStudent", "testSurname", 2, "testGroup");
+        student* testStud = new student(0, "testStudent", "testSurname", 2, "testGroup");
         // Add some test marks
-        testStud.setScore({{"test1", 4}, {"test2", 5}, {"test3", 3}});
+        testStud->setScore({{"test1", 4}, {"test2", 5}, {"test3", 3}});
         std::string studLogin("stud_test");
         std::string studPassword("stud123");
-        registerStudentToDB(testStud, studLogin, studPassword);
+        registerStudentToDB(*testStud, studLogin, studPassword);
+        delete testStud;
         std::cout << COLORGREEN << "Student added successfully" << COLORDEFAULT << "\n\n";
     } catch (const std::exception& e) {
         std::cerr << COLORRED << "Failed to add student: " << e.what() << COLORDEFAULT << "\n\n";
@@ -298,17 +302,17 @@ void runTests(){
     try {
         pqxx::work w(Database::getInstance());
         
-        w.exec_params("DELETE FROM scores WHERE studentId IN (SELECT s.id FROM students s JOIN users u ON s.userId = u.id WHERE u.login IN ('stud_test'));");
+        w.exec("DELETE FROM scores WHERE studentId IN (SELECT s.id FROM students s JOIN users u ON s.userId = u.id WHERE u.login = 'stud_test');");
         
-        w.exec_params("DELETE FROM students WHERE userId IN (SELECT id FROM users WHERE login = 'stud_test');");
+        w.exec("DELETE FROM students WHERE userId IN (SELECT id FROM users WHERE login = 'stud_test');");
         
-        w.exec_params("DELETE FROM professors WHERE userId IN (SELECT id FROM users WHERE login = 'prof_test');");
+        w.exec("DELETE FROM professors WHERE userId IN (SELECT id FROM users WHERE login = 'prof_test');");
         
-        w.exec_params("DELETE FROM subjects WHERE name IN ('test1', 'test2', 'test3', 'testSubject');");
+        w.exec("DELETE FROM subjects WHERE name IN ('test1', 'test2', 'test3', 'testSubject');");
         
-        w.exec_params("DELETE FROM users WHERE login IN ('stud_test', 'prof_test');");
+        w.exec("DELETE FROM users WHERE login IN ('stud_test', 'prof_test');");
         
-        w.exec_params("DELETE FROM groups WHERE groupName = 'testGroup';");
+        w.exec("DELETE FROM groups WHERE groupName = 'testGroup';");
         
         w.commit();
         std::cout << COLORGREEN << "All test data deleted successfully" << COLORDEFAULT << "\n";
@@ -342,9 +346,11 @@ void checkExtensionsAdmin(){
         std::cout << COLORGREEN << "Subjects extension check completed successfully\n" << COLORDEFAULT;
 
         std::cout << "Checking groups without assigned professors and students...\n";
-        r = w.exec(
+        w.exec(
             "DELETE FROM groups "
             "WHERE id NOT IN (SELECT DISTINCT groupId FROM professors);"
+        );
+        w.exec(
             "DELETE FROM groups "
             "WHERE id NOT IN (SELECT DISTINCT groupId FROM students);"
         );
@@ -386,8 +392,9 @@ void createUser(){
         std::cout << "Enter subject: ";
         std::getline(std::cin, subject);
 
-        professor newProfessor(id, name, surname, yearsInUniversity, groupCurator, subject);
-        registerProfessorToDB(newProfessor, login, password);
+        professor* newProfessor = new professor(id, name, surname, yearsInUniversity, groupCurator, subject);
+        registerProfessorToDB(*newProfessor, login, password);
+        delete newProfessor;
     } else if(roleChoice == '2'){
         unsigned int id = -1, educationYear = 0;
         std::string name, surname, group;
@@ -401,7 +408,8 @@ void createUser(){
         std::cout << "Enter group: ";
         std::getline(std::cin, group);
 
-        student newStudent(id, name, surname, educationYear, group);
-        registerStudentToDB(newStudent, login, password);
+        student* newStudent = new student(id, name, surname, educationYear, group);
+        registerStudentToDB(*newStudent, login, password);
+        delete newStudent;
     } 
 }

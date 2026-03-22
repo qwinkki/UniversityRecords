@@ -97,12 +97,10 @@ void studentAdminMenu(student& student) {
 }
 
 // database
-void registerStudentToDB(student& student, const std::string& login, std::string& password){
+void registerStudentToDB(student& student, const std::string& login, const std::string& password){
 	pqxx::work w(Database::getInstance());
 
     try{
-		hashPasswdSHA512(password);
-
 		int groupId = getGroupId(w, student.getGroup());
 
         // check login
@@ -185,12 +183,10 @@ void updateStudentInDB(const student& student){
 	    std::cerr << COLORRED << e.what() << '\n' << COLORDEFAULT;
 	}
 }
-student getStudentFromDB(const std::string& login, std::string& password){
+student getStudentFromDB(const std::string& login, const std::string& password){
 	pqxx::work w(Database::getInstance());
 
 	try{
-		hashPasswdSHA512(password);
-
 		pqxx::result userRes = w.exec_params("SELECT id, role FROM users WHERE login = $1 AND password = $2;", login, password);
 		std::string role = userRes[0]["role"].as<std::string>();
 		if(userRes.empty() || role != "student") throw "Wrong login or password";

@@ -234,7 +234,7 @@ professor getProfessorFromDB(const std::string& login, std::string& password){
         }
         
         // get professor, group and subject
-        pqxx::result professorRes = w.exec_params("SELECT p.id, p.name, p.surname, p.years, g.groupName, p.subjectId FROM professors p JOIN groups g ON p.groupId = g.id WHERE p.userId = $1 AND subjectId = $2;", 
+        pqxx::result professorRes = w.exec_params("SELECT p.id, p.name, p.surname, p.years, g.groupName, sub.name AS subjectName FROM professors p JOIN groups g ON p.groupId = g.id JOIN subjects sub ON p.subjectId = sub.id WHERE p.userId = $1 AND p.subjectId = $2;", 
             userId, subjectId);
         if(professorRes.empty()) throw "Professor profile not found";   
 
@@ -244,7 +244,7 @@ professor getProfessorFromDB(const std::string& login, std::string& password){
             professorRes[0]["surname"].as<std::string>(),
             professorRes[0]["years"].as<int>(),
             professorRes[0]["groupName"].as<std::string>(),
-            professorRes[0]["subjectId"].as<std::string>()
+            professorRes[0]["subjectName"].as<std::string>()
         );
         return prof;
 	}

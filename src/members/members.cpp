@@ -4,7 +4,7 @@ char getUserType(std::string& login){
 	pqxx::work w(Database::getInstance());
 
 	try{
-		pqxx::result r = w.exec_params("SELECT role FROM users WHERE login = $1", login);
+		pqxx::result r = w.exec_params("SELECT role FROM users WHERE login = $1;", login);
 
 		if(r.empty()) return 'n';
 

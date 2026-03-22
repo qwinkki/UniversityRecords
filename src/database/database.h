@@ -5,6 +5,7 @@
 
 class Database {
 	Database();
+	~Database();
 	static std::unique_ptr<pqxx::connection> conn;
 public:
 	static pqxx::connection& getInstance();

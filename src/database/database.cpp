@@ -25,6 +25,17 @@ Database::Database() {
 		}
 }
 
+Database::~Database() {
+	if (conn) {
+		try {
+			conn.reset();
+		}
+		catch (const std::exception& e) {
+			std::cerr << COLORRED << "Error closing database connection: " << e.what() << '\n' << COLORDEFAULT;
+		}
+	}
+}
+
 // create default admin if not exists
 void createDefaultAdmin(){
     std::cout << "Create default admin if not exists...\nEnter login for default admin: ";

@@ -249,6 +249,8 @@ public:
             std::cout << "\n\tStudent end studing at university " << getYearsInUniversity() << " years ago\n";
         }
     }
+    
+    ~student() = default;
 };
 
 // menu

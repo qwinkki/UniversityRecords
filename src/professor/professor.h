@@ -50,6 +50,8 @@ class professor : public member
             << " id: " << getId() << " | " << getName() << ' ' << getSurname() << " Group: " << getGroupCurator() << " | with subject: " << getSubject() 
             << "\n\tTeaching is university: " << getYearsInUniversity() << " years\n";
     }
+
+    ~professor() = default;
 };
 
 // menu
